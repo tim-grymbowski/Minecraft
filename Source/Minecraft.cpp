@@ -8,10 +8,10 @@
 #include <GLFW/glfw3.h>
 
 #define STB_IMAGE_IMPLEMENTATION
-#include "./Source/stb_image/stb_image.h"
+#include "./vendor/stb_image/stb_image.h"
 
-#include "./Source/glm/glm.hpp"
-#include "./Source/glm/gtc/matrix_transform.hpp"
+#include "./vendor/glm/glm.hpp"
+#include "./vendor/glm/gtc/matrix_transform.hpp"
 
 
 struct Vertex
