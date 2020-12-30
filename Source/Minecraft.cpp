@@ -25,7 +25,6 @@ struct Vertex
 
 	float t;
 
-	//float s;
 	Vertex(float x, float y, float z, float u, float v, float t);
 };
 
@@ -226,42 +225,6 @@ Vertex mesh[] = {
 	Vertex(-1.5f, +0.5f, -3.0f, +0.75f, +0.25f, +1.0f),
 }; 
 
-/*Vertex water_mesh[] = {
-
-	/* FRONT FACE */
-
-	/*Vertex(-0.5f, -0.5f, -1000.1f, +0.25f, +0.25f, +0.0f),
-	Vertex(-0.5f, +0.5f, -1000.1f, +0.25f, +0.75f, +0.0f),
-	Vertex(+0.5f, +0.5f, -1000.1f, +0.75f, +0.75f, +0.0f),
-
-	Vertex(-0.5f, -0.5f, -1000.1f, +0.25f, +0.25f, +0.0f),
-	Vertex(+0.5f, +0.5f, -1000.1f, +0.75f, +0.75f, +0.0f),
-	Vertex(+0.5f, -0.5f, -1000.1f, +0.75f, +0.25f, +0.0f),
-};*/
-
-/*const std::string loadShader(const std::string& path)
-{
-	std::string __output;
-	std::string output;
-	std::ifstream shader(path);
-	if (!shader.is_open())
-	{
-		std::cerr << "Failed to load shader: " << path << std::endl;
-		return "";
-	}
-	else
-	{
-		while (shader >> __output)
-		{
-			output += __output;
-		}
-	}
-	return output;
-}*/
-
-//unsigned int arr_buf;
-//unsigned int buf;
-
 void arrow(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
 	if (key == GLFW_KEY_W && action == GLFW_REPEAT)
@@ -269,44 +232,28 @@ void arrow(GLFWwindow* window, int key, int scancode, int action, int mods)
 		for (int i = 0; i < sizeof(mesh) / sizeof(Vertex); ++i)
 			mesh[i].z += 0.01f;
 
-		//glBindVertexArray(arr_buf);
-		//glBindBuffer(1, buf);
 		glBufferData(GL_ARRAY_BUFFER, sizeof(mesh), mesh, GL_STATIC_DRAW);
-		//glBindVertexArray(0);
-		//glBindBuffer(GL_ARRAY_BUFFER, 0);
 	}
 	else if (key == GLFW_KEY_A && action == GLFW_REPEAT)
 	{
 		for (int i = 0; i < sizeof(mesh) / sizeof(Vertex); ++i)
 			mesh[i].x += 0.05f;
 
-		//glBindVertexArray(arr_buf);
-		//glBindBuffer(1, buf);
 		glBufferData(GL_ARRAY_BUFFER, sizeof(mesh), mesh, GL_STATIC_DRAW);
-		//glBindVertexArray(0);
-		//glBindBuffer(GL_ARRAY_BUFFER, 0);
 	}
 	else if (key == GLFW_KEY_S && action == GLFW_REPEAT)
 	{
 		for (int i = 0; i < sizeof(mesh) / sizeof(Vertex); ++i)
 			mesh[i].z -= 0.01f;
 
-		//glBindVertexArray(arr_buf);
-		//glBindBuffer(1, buf);
 		glBufferData(GL_ARRAY_BUFFER, sizeof(mesh), mesh, GL_STATIC_DRAW);
-		//glBindVertexArray(0);
-		//glBindBuffer(GL_ARRAY_BUFFER, 0);
 	}
 	else if (key == GLFW_KEY_D && action == GLFW_REPEAT)
 	{
 		for (int i = 0; i < sizeof(mesh) / sizeof(Vertex); ++i)
 			mesh[i].x -= 0.05f;
 
-		//glBindVertexArray(arr_buf);
-		//glBindBuffer(1, buf);
 		glBufferData(GL_ARRAY_BUFFER, sizeof(mesh), mesh, GL_STATIC_DRAW);
-		//glBindVertexArray(0);
-		//glBindBuffer(GL_ARRAY_BUFFER, 0);
 	}
 
 	else if (key == GLFW_KEY_X && action == GLFW_REPEAT)
@@ -314,22 +261,14 @@ void arrow(GLFWwindow* window, int key, int scancode, int action, int mods)
 		for (int i = 0; i < sizeof(mesh) / sizeof(Vertex); ++i)
 			mesh[i].y += 0.05f;
 
-		//glBindVertexArray(arr_buf);
-		//glBindBuffer(1, buf);
 		glBufferData(GL_ARRAY_BUFFER, sizeof(mesh), mesh, GL_STATIC_DRAW);
-		//glBindVertexArray(0);
-		//glBindBuffer(GL_ARRAY_BUFFER, 0);
 	}
 	else if (key == GLFW_KEY_Z && action == GLFW_REPEAT)
 	{
 		for (int i = 0; i < sizeof(mesh) / sizeof(Vertex); ++i)
 			mesh[i].y -= 0.05f;
 
-		//glBindVertexArray(arr_buf);
-		//glBindBuffer(1, buf);
 		glBufferData(GL_ARRAY_BUFFER, sizeof(mesh), mesh, GL_STATIC_DRAW);
-		//glBindVertexArray(0);
-		//glBindBuffer(GL_ARRAY_BUFFER, 0);
 	}
 }
 
@@ -394,12 +333,12 @@ int main(void)
 	glAttachShader(program, vertex_shader);
 	glAttachShader(program, fragment_shader);
 	glLinkProgram(program);
-	// //
+
 	unsigned int buf;
 	glGenBuffers(1, &buf);
 	glBindBuffer(GL_ARRAY_BUFFER, buf);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(mesh), mesh, GL_STATIC_DRAW);
-	// //
+
 	unsigned int arr_buf;
 	glGenVertexArrays(1, &arr_buf);
 	glBindVertexArray(arr_buf);
@@ -412,28 +351,6 @@ int main(void)
 
 	glEnableVertexAttribArray(2);
 	glVertexAttribPointer(2, 1, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)(5 * sizeof(float)));
-
-	// BEGIN TEMP 
-	/*
-	unsigned int water_arr_buf;
-	glGenVertexArrays(1, &water_arr_buf);
-	glBindVertexArray(water_arr_buf);
-
-	unsigned int water_buf;
-	glGenBuffers(1, &water_buf);
-	glBindBuffer(GL_ARRAY_BUFFER, water_buf);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(water_mesh), water_mesh, GL_STATIC_DRAW);
-
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)(0 * sizeof(float)));
-
-	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)(3 * sizeof(float)));
-
-	glEnableVertexAttribArray(2);
-	glVertexAttribPointer(2, 1, GL_FLOAT, GL_FALSE, sizeof(Vertex), (const void*)(5 * sizeof(float)));
-	*/
-	// END TEMP
 
 	const std::string& filename = "../Resources/images/room.png";
 	int width = 1400;
@@ -456,9 +373,6 @@ int main(void)
 
 	if (image_data != nullptr) stbi_image_free(image_data);
 
-	//glActiveTexture(GL_TEXTURE0);
-	//glBindTexture(GL_TEXTURE_2D, tex);
-
 	glUseProgram(program);
 
 	int location = glGetUniformLocation(program, "texture_sampler");
@@ -472,10 +386,6 @@ int main(void)
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glBlendEquation(GL_ADD);
 
-	/* Depth buffering doesn't seem to take into account transparency,
-	 * so separate draw calls may be necessary if there are both opaque
-	 * and translucent/transparent objects in the world, each with new 
-	 * settings. Or would this even work? */
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LESS);
 
@@ -487,20 +397,6 @@ int main(void)
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glDrawArrays(GL_TRIANGLES, 0, sizeof(mesh) / sizeof(Vertex));
 
-		/* Now, you might want to record every value for z after projection, save this in some 
-		 * variable vertex_z_copy, then revert back to the default positions, or something to
-		 * be able to observe everything and know where it is as well. In the fragment shader,
-		 * thus output fragment_z_copy. */
-
-		/* It seems the depth buffer is now all 1s, for some reason.
-		 * If this is the case, then how does the depth test per draw call work? 
-		 * If say the */
-		/*
-		glFrontFace(GL_CW);
-		glBindVertexArray(water_arr_buf);
-		glDrawArrays(GL_TRIANGLES, 0, sizeof(water_mesh) / sizeof(Vertex));
-		*/
-
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 	} 
@@ -508,16 +404,3 @@ int main(void)
 	glfwTerminate();
 	return 0;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
