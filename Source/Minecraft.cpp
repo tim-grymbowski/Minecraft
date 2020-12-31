@@ -12,7 +12,11 @@
 
 #include "./vendor/glm/glm.hpp"
 #include "./vendor/glm/gtc/matrix_transform.hpp"
+#include "./vendor/glm/gtc/type_ptr.hpp"
 
+static bool esc = false;
+static double cursor_x0 = 0;
+static double cursor_y0 = 0;
 
 struct Vertex
 {
@@ -225,51 +229,109 @@ Vertex mesh[] = {
 	Vertex(-1.5f, +0.5f, -3.0f, +0.75f, +0.25f, +1.0f),
 }; 
 
-void arrow(GLFWwindow* window, int key, int scancode, int action, int mods)
+class Camera
+{
+private:
+	glm::mat4 view;
+public:
+	Camera();
+
+	inline void TranslateX(const glm::vec3& x);
+	inline void TranslateY(const glm::vec3& y);
+	inline void TranslateZ(const glm::vec3& z);
+
+	inline glm::mat4 GetView();
+};
+
+Camera::Camera()
+{
+	this->view = glm::identity<glm::mat4>();
+}
+
+void Camera::TranslateX(const glm::vec3& x)
+{
+	glm::mat4 view = this->view;
+	this->view = glm::translate(view, x);
+}
+
+void Camera::TranslateY(const glm::vec3& y)
+{
+	glm::mat4 view = this->view;
+	this->view = glm::translate(view, y);
+}
+
+void Camera::TranslateZ(const glm::vec3& z)
+{
+	glm::mat4 view = this->view;
+	this->view = glm::translate(view, z);
+}
+
+glm::mat4 Camera::GetView()
+{
+	return this->view;
+}
+
+static Camera camera;
+
+static int location;
+
+void key_event_handler(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
 	if (key == GLFW_KEY_W && action == GLFW_REPEAT)
 	{
-		for (int i = 0; i < sizeof(mesh) / sizeof(Vertex); ++i)
-			mesh[i].z += 0.01f;
-
-		glBufferData(GL_ARRAY_BUFFER, sizeof(mesh), mesh, GL_STATIC_DRAW);
+		camera.TranslateZ(glm::vec3(0.0f, 0.0f, 0.1f));
+		glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(camera.GetView()));
 	}
 	else if (key == GLFW_KEY_A && action == GLFW_REPEAT)
 	{
-		for (int i = 0; i < sizeof(mesh) / sizeof(Vertex); ++i)
-			mesh[i].x += 0.05f;
-
-		glBufferData(GL_ARRAY_BUFFER, sizeof(mesh), mesh, GL_STATIC_DRAW);
+		camera.TranslateX(glm::vec3(0.1f, 0.0f, 0.0f));
+		glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(camera.GetView()));
 	}
 	else if (key == GLFW_KEY_S && action == GLFW_REPEAT)
 	{
-		for (int i = 0; i < sizeof(mesh) / sizeof(Vertex); ++i)
-			mesh[i].z -= 0.01f;
-
-		glBufferData(GL_ARRAY_BUFFER, sizeof(mesh), mesh, GL_STATIC_DRAW);
+		camera.TranslateX(glm::vec3(0.0f, 0.0f, -0.1f));
+		glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(camera.GetView()));
 	}
 	else if (key == GLFW_KEY_D && action == GLFW_REPEAT)
 	{
-		for (int i = 0; i < sizeof(mesh) / sizeof(Vertex); ++i)
-			mesh[i].x -= 0.05f;
-
-		glBufferData(GL_ARRAY_BUFFER, sizeof(mesh), mesh, GL_STATIC_DRAW);
+		camera.TranslateZ(glm::vec3(-0.1f, 0.0f, 0.0f));
+		glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(camera.GetView()));
 	}
 
 	else if (key == GLFW_KEY_X && action == GLFW_REPEAT)
 	{
-		for (int i = 0; i < sizeof(mesh) / sizeof(Vertex); ++i)
-			mesh[i].y += 0.05f;
-
-		glBufferData(GL_ARRAY_BUFFER, sizeof(mesh), mesh, GL_STATIC_DRAW);
+		camera.TranslateZ(glm::vec3(0.0f, 0.1f, 0.0f));
+		glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(camera.GetView()));
 	}
 	else if (key == GLFW_KEY_Z && action == GLFW_REPEAT)
 	{
-		for (int i = 0; i < sizeof(mesh) / sizeof(Vertex); ++i)
-			mesh[i].y -= 0.05f;
-
-		glBufferData(GL_ARRAY_BUFFER, sizeof(mesh), mesh, GL_STATIC_DRAW);
+		camera.TranslateZ(glm::vec3(0.0f, -0.1f, 0.0f));
+		glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(camera.GetView()));
 	}
+	else if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
+		int cursor = esc ? GLFW_CURSOR_DISABLED : GLFW_CURSOR_NORMAL;
+		glfwSetInputMode(window, GLFW_CURSOR, cursor);
+		esc = !esc;
+	}
+}
+
+void cursor_event_handler(GLFWwindow* window, double x, double y)
+{
+	double x_offset = x - cursor_x0;
+	double y_offset = y - cursor_y0;
+
+	std::cout << "Moved by: (x = " << x_offset << ", y = " << y_offset << ")" << std::endl;
+
+	float yaw;
+	float pitch;
+
+	if (!esc) 
+	{
+		// Looking around code here
+	}
+
+	cursor_x0 = x;
+	cursor_y0 = y;
 }
 
 int main(void)
@@ -292,6 +354,9 @@ int main(void)
 	{
 		std::cerr << "Error: Invalid rendering context" << std::endl;
 	}
+	
+	glfwGetCursorPos(window, &cursor_x0, &cursor_y0);
+	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
 	glEnable(GL_CULL_FACE);
 	glFrontFace(GL_CW);	
@@ -303,9 +368,10 @@ int main(void)
 		"out vec2 fragment_tex_coord;\n"
 		"out vec2 fragment_tex_id;\n"
 		"uniform mat4 matrix;\n"
+		"uniform mat4 view;\n"
 		"void main()\n"
 		"{\n"
-		"	gl_Position = matrix * vec4(vertex_pos, 1.0);\n"
+		"	gl_Position = matrix * view * vec4(vertex_pos, 1.0);\n"
 		"	fragment_tex_coord = vertex_tex_coord;\n"
 		"	fragment_tex_id = vertex_tex_id;\n"
 		"}\n"; 
@@ -317,7 +383,7 @@ int main(void)
 		"uniform sampler2D texture_sampler;\n"
 		"void main()\n"
 		"{\n"
-		"	if (fragment_tex_id.x != -0) frag_color = texture(texture_sampler, fragment_tex_coord);\n"
+		"	if (fragment_tex_id.x != 0.0) frag_color = texture(texture_sampler, fragment_tex_coord);\n"
 		"	else frag_color = vec4(0.0, 0.0, 0.75, 0.75);\n"
 		"}\n";
 
@@ -375,12 +441,16 @@ int main(void)
 
 	glUseProgram(program);
 
-	int location = glGetUniformLocation(program, "texture_sampler");
+	location = glGetUniformLocation(program, "texture_sampler");
 	glUniform1i(location, 0);
 
 	glm::mat4 matrix = glm::perspective(glm::radians(70.0f), 16.0f / 9.0f, 0.1f, 1000.0f);
 	location = glGetUniformLocation(program, "matrix");
 	glUniformMatrix4fv(location, 1, GL_FALSE, &matrix[0][0]);
+	
+	glm::mat4 view = camera.GetView(); // or glm::identity<glm::mat4>();
+	location = glGetUniformLocation(program, "view");
+	glUniformMatrix4fv(location, 1, GL_FALSE, &view[0][0]);
 	
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -389,7 +459,8 @@ int main(void)
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LESS);
 
-	glfwSetKeyCallback(window, arrow);
+	glfwSetKeyCallback(window, key_event_handler);
+	glfwSetCursorPosCallback(window, cursor_event_handler);
 	
 	while (!glfwWindowShouldClose(window))
 	{
